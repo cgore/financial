@@ -1,0 +1,15 @@
+You probably want to play with the tvm-perpetuity-payment function mostly.
+
+1. Install rlwrap
+
+2. Install sbcl
+
+3. At the shell, type: rlwrap sbcl
+
+4. In SBCL, type: (load "interest")
+
+4. In SBCL, type: (tvm-perpetuity-payment 75000.00 1.05 12 30)
+
+That will tell you how much you need to save each month to get back $75,000 per
+year, assuming a 5% beat on inflation (not that irrationally exhuberant) for
+the next 30 years.
