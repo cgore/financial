@@ -35,8 +35,40 @@
 (use-package 'utilities)
 
 (defun tvm-fv (payment interest-rate payments-per-period periods)
-  "Calculates the time value of money (TVM) future value (FV).  This function
-  implicitly assumes an annual compounding period."
+  "Function TVM-FV
+
+SYNTAX:
+tvm-fv payment interest-rate payments-per-period periods  =>  future-value
+
+ARGUMENTS AND VALUES:
+payment: a floating point number.
+interest-rate: a floating point number (e.g., 3% would be 1.03).
+payments-per-period: how many payments per period, as an integer (e.g., monthly
+        payments with an annual interest rate quote would be 12.)
+periods: how many periods, as an integer (e.g, 12 for 12 years).
+
+DESCRIPTION:
+Calculates the time value of money (TVM) future value (FV) for the simple
+payment schedule passed in.
+
+EXAMPLES:
+To calculate the amount after 5 years of depositing $1,000.00 per month into
+a savings account bearing 3% interest per annum:
+> (tvm-fv 1000.00 1.03 12 5)
+=> 94055.76
+Thus implying a final account balance of $94,055.76.
+
+SIDE EFFECTS: None.
+
+AFFECTED BY: None.
+
+EXCEPTIONAL SITUATIONS:
+Should throw an error if one of the arguments isn't of the correct type.
+
+SEE ALSO:
+The rest of this library.
+
+NOTES: None."
   (assert (numberp payment))
   (assert (numberp interest-rate))
   (assert (positive-integer? payments-per-period))
