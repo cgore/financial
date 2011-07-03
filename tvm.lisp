@@ -34,87 +34,25 @@
 (load "utilities")
 (use-package 'utilities)
 
-(defun tvm-fv (payment interest-rate payments-per-period periods)
-  "Function TVM-FV
+(defun future-value-formula (present-value future-value interest% periods)
+  (let ((arguments (list present-value future-value interest% periods))
+        (interest-rate (when interest% (1+ (/ interest% 100.0)))))
+    (assert (= 1 (count nil arguments)))
+    (mapcar (lambda (x)
+              (assert (or (numberp x) (null x))))
+            arguments)
+    (cond ((null present-value)
+           (/ future-value (expt interest-rate periods)))
+          ((null future-value)
+           (* present-value (expt interest-rate periods)))
+          ((null interest%)
+           (* 100.0 (1- (expt (/ future-value present-value) (/ periods)))))
+          ((null periods)
+           (log (/ future-value present-value) interest-rate))
+          (t (error "over-specified TVM system (also, s.b. unreachable)")))))
 
-SYNTAX:
-tvm-fv payment interest-rate payments-per-period periods  =>  future-value
-
-ARGUMENTS AND VALUES:
-payment: a floating point number.
-interest-rate: a floating point number (e.g., 3% would be 1.03).
-payments-per-period: how many payments per period, as an integer (e.g., monthly
-        payments with an annual interest rate quote would be 12.)
-periods: how many periods, as an integer (e.g, 12 for 12 years).
-
-DESCRIPTION:
-Calculates the time value of money (TVM) future value (FV) for the simple
-payment schedule passed in.
-
-EXAMPLES:
-To calculate the amount after 5 years of depositing $1,000.00 per month into
-a savings account bearing 3% interest per annum:
-> (tvm-fv 1000.00 1.03 12 5)
-=> 94055.76
-Thus implying a final account balance of $94,055.76.
-
-SIDE EFFECTS: None.
-
-AFFECTED BY: None.
-
-EXCEPTIONAL SITUATIONS:
-Should throw an error if one of the arguments isn't of the correct type.
-
-SEE ALSO:
-The rest of this library.
-
-NOTES: None."
-  (assert (numberp payment))
-  (assert (numberp interest-rate))
-  (assert (positive-integer? payments-per-period))
-  (assert (positive-integer? periods))
-  (apply #'+
-         (mapcar (lambda (period)
-                   (* payments-per-period (float payment)
-                      (expt (float interest-rate) period)))
-                 (loop for i from 1 to periods collect i))))
-
-(defun tvm-perpetual (payment interest-rate payments-per-period periods)
-  "Calculates the final TVM FV perpetual return.  That is, how much we can
-  expect to see in returns forever from a TVM-FV payment schedule after the
-  payments have been completed."
-  (assert (numberp payment))
-  (assert (numberp interest-rate))
-  (assert (positive-integer? payments-per-period))
-  (assert (positive-integer? periods))
-  (* (1- interest-rate)
-     (tvm-fv payment interest-rate payments-per-period periods)))
-
-(defun tvm-fv-payment (desired-fv interest-rate payments-per-period periods)
-  "Calculates what payment is required to generate the desired future value
-  given the specified payments per year, annual interest rate, and number of
-  periods.  This function implicitly assumes an annual compounding period."
-  (assert (numberp desired-fv))
-  (assert (numberp interest-rate))
-  (assert (positive-integer? payments-per-period))
-  (assert (positive-integer? periods))
-  (let ((payment 1.00))
-    (while (< (tvm-fv payment interest-rate payments-per-period periods)
-              desired-fv)
-      (incf payment))
-    payment))
-
-(defun tvm-perpetuity-payment
-  (desired-perpetuity interest-rate payments-per-period periods)
-  "Calculates what payment is required to generate the desired perpetuity given
-  the specified payment schedule and interest rate."
-  (assert (numberp desired-perpetuity))
-  (assert (numberp interest-rate))
-  (assert (positive-integer? payments-per-period))
-  (assert (positive-integer? periods))
-  ;;; NB: This algorithm is horrible.  Aren't multi-gigahertz CPUs great?
-  (let ((payment 1.00))
-    (while (< (tvm-perpetual payment interest-rate payments-per-period periods)
-              desired-perpetuity)
-      (incf payment))
-    payment))
+;;; Numbers compared against an HP 10bII.
+(assert (= (future-value-formula nil 150000.00 5.0 30) 34706.664))
+(assert (= (future-value-formula 10000.00 nil 5.0 30) 43219.367))
+(assert (= (future-value-formula 10000.00 50000.00 nil 30) 5.5113077))
+(assert (= (future-value-formula 5000.00 10000.00 5.75 nil) 12.398077))
