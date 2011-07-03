@@ -51,8 +51,23 @@
            (log (/ future-value present-value) interest-rate))
           (t (error "over-specified TVM system (also, s.b. unreachable)")))))
 
-;;; Numbers compared against an HP 10bII.
+;; If I can receive 5% interest for the next 30 years, how much money do I need
+;; to deposit right now to get $150,000.00 at the end?  Answer is $34,706.66.
+;; [Result checked against an HP 10bII.]
 (assert (= (future-value-formula nil 150000.00 5.0 30) 34706.664))
+
+;; If I have $10,000.00 to deposit right now and can let it sit for the next 30
+;; years at 5% interest, how much money will I have?  Answer is $43,219.36.
+;; [Result checked against an HP 10bII.]
 (assert (= (future-value-formula 10000.00 nil 5.0 30) 43219.367))
+
+;; If I have $10,000.00 now and want to have $50,000.00 in 30 years, what sort
+;; of interest rate do I need to get?  Answer is 5.51%.
+;; [Result checked against an HP 10bII.]
 (assert (= (future-value-formula 10000.00 50000.00 nil 30) 5.5113077))
+
+;; If I have $5,000.00 now and can get 5.75% interest, how long will it take
+;; until I have $10,000.00?  Answer is 12.398 years, which is approximately
+;; 12 years and 5 months.
+;; [Result checked against an HP 10bII.]
 (assert (= (future-value-formula 5000.00 10000.00 5.75 nil) 12.398077))
