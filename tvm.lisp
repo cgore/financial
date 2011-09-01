@@ -31,7 +31,7 @@
 ;;;; ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 ;;;; POSSIBILITY OF SUCH DAMAGE.
 
-(load "utilities")
+(load "lisp-utilities/utilities")
 (use-package 'utilities)
 
 (defun future-value-formula (present-value future-value interest% periods)

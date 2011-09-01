@@ -1,0 +1,3 @@
+[submodule "lisp-utilities"]
+	path = lisp-utilities
+	url = git://github.com/cgore/lisp-utilities.git
